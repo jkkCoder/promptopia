@@ -21,10 +21,25 @@ const PromptCard = ({post, handleTagClick, handleEdit, handleDelete}) => {
     }, 1000);
   }
 
+  const goToProfile = (post) => {
+    console.log('post is ', post)
+    const userId = post?.creator?._id
+
+    if(session?.user.id === userId)
+    {
+      router.push('/profile')
+      return;
+    }
+    router.push(`/user-profile?userId=${userId}`)
+  }
+
   return (
     <div className="prompt_card">
       <div className="flex justify-between items-start gap-5">
-        <div className="flex-1 flex justify-start items-center gap-3 cursor-pointer">
+        <div 
+          className="flex-1 flex justify-start items-center gap-3 cursor-pointer"
+          onClick={() => goToProfile(post)}
+        >
           <Image
             src={post.creator.image}
             alt="user_image"
