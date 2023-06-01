@@ -1,5 +1,6 @@
 import { connectToDb } from "@utils/database"
 import Prompt from "@models/prompt";
+import User from "@models/user"
 
 export const GET = async (req,{params}) => {
     try {
@@ -7,9 +8,19 @@ export const GET = async (req,{params}) => {
 
         const prompts = await Prompt.find({
             creator: params.id
-        }).populate('creator');
+        }).lean().populate('creator', ['username', 'image'])
 
-        return new Response(JSON.stringify(prompts), {
+        let user
+        if(prompts?.length === 0){
+            user = await User.findById(params.id, {username: 1}).lean();
+        }
+
+        const response = {
+            prompts,
+            userName : prompts?.[0]?.creator.username || user?.username
+        }
+
+        return new Response(JSON.stringify(response), {
             status: 200
         })
     } catch(err) {
